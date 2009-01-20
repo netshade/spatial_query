@@ -118,7 +118,7 @@
    -centroid_3d() -> Vector
    -convex_hull_2d() -> Polygon
    -contains_2d(other_polygon) -> Boolean
-    -intersects_2d(other_polygon) -> Array of vectors(intersections) or null
+   -intersects_2d(other_polygon) -> Array of vectors(intersections) or null
 
  LatitudeLongitude: $ll( [latitude, longitude, altitude] )
    -vector() -> Vector, convert to WSG84 x/y/z coords
@@ -1024,7 +1024,7 @@ _latlng.class = _latlng.prototype = {
   //  Vincenty Inverse Solution of Geodesics on the Ellipsoid (c) Chris Veness 2002-2008
   distance_to : function(other){
     var oll = _latlng(other);
-    var lat1 = this.lat(), lon1 = this.lon(), lat2 = oll.lat(), lon2 = oll.lon();
+    var lat1 = this.lat(), lon1 = this.lng(), lat2 = oll.lat(), lon2 = oll.lng();
     var a = 6378137, b = 6356752.3142,  f = 1/298.257223563;  // WGS-84 ellipsiod
       var L = _vector.numberToRadians(lon2-lon1);
     var U1 = Math.atan((1-f) * Math.tan(_vector.numberToRadians(lat1)));
@@ -1066,8 +1066,8 @@ _latlng.class = _latlng.prototype = {
     var oll = _latlng(other);
     var lat1 = _vector.numberToRadians(this.lat()),
     lat2 = _vector.numberToRadians(oll.lat()),
-    lon1 = this.lon(),
-    lon2 = oll.lon();
+    lon1 = this.lng(),
+    lon2 = oll.lng();
     var dLon = _vector.numberToRadians(lon2-lon1);
     var y = Math.sin(dLon) * Math.cos(lat2);
     var x = Math.cos(lat1)*Math.sin(lat2) -
@@ -1075,7 +1075,7 @@ _latlng.class = _latlng.prototype = {
     return _latlng.numberToBearing(Math.atan2(y, x));
   },
   destination_given_distance_and_bearing : function(dist, bearing){
-    var lat = this.lat(), lon = this.lon();
+    var lat = this.lat(), lon = this.lng();
     var R = _latlng.EARTH_RADIUS_KM;
     var lat1 = _vector.numberToRadians(lat),
     lon1 = _vector.numberToRadians(lon);
