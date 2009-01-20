@@ -1098,9 +1098,3 @@ _vector.class.assert.prototype = _vector.class,
 _polygon.class.assert.prototype = _polygon.class,
 _latlng.class.assert.prototype = _latlng.class;
 
-
-var square = [[0,10], [0, 100], [100, 100], [100, 10]],
-    enclosing = [[-2, -2], [-2, 2], [2, 2], [2, -2]],
-    intersecting = [[50, 0], [50, 150], [150, 150], [150, 0]];
-var INDY_LAT = 39.7670;
-var INDY_LON = -86.1563;
