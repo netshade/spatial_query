@@ -117,6 +117,8 @@
    -centroid_2d() -> Vector
    -centroid_3d() -> Vector
    -convex_hull_2d() -> Polygon
+   -contains_2d(other_polygon) -> Boolean
+    -intersects_2d(other_polygon) -> Array of vectors(intersections) or null
 
  LatitudeLongitude: $ll( [latitude, longitude, altitude] )
    -vector() -> Vector, convert to WSG84 x/y/z coords
@@ -639,6 +641,36 @@ _polygon.class = _polygon.prototype = {
     }
     this.count ++;
     return this;
+  },
+  contains_2d : function(other){
+    var p = _polygon(other);
+    var inside = 0;
+    this.foreach(function(node){
+                   if(p.point_inside_2d(node)){
+                     inside++;
+                   }
+                 });
+    return (inside == this.count);
+  },
+  intersects_2d : function(other){
+    var p = _polygon(other);
+    var points = [];
+    this.foreach(function(si){
+                   p.foreach(function(cj){
+                               var snext = si.next_non_intersecting(), cnext = cj.next_non_intersecting();
+                               if(snext == null || cnext == null) throw new Error("Polygon list integrity broken"); // list integrity broken
+                               var pt = _vector.pointOfIntersectionForLineSegments([[si.x, si.y], [snext.x, snext.y]],
+                                                                                   [[cj.x, cj.y], [cnext.x, cnext.y]]);
+
+                               if(pt != null){
+                                 points.push(_vector(pt[0], pt[1]));
+                               }
+                             });
+                 });
+    if(points.length == 0)
+      return null;
+    else
+      return points;
   },
   // winding number calc
   // taken from brenor's php impl.
