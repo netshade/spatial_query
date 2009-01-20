@@ -590,7 +590,7 @@ _polygon.class = _polygon.prototype = {
       this.head.next = this.head;
       this.count ++;
     } else {
-      this.insert_vertex_after(vtx, this.head);
+      this.insert_vertex_after(vtx, this.tail);
     }
     return this;
   },
@@ -609,9 +609,9 @@ _polygon.class = _polygon.prototype = {
     } while(node != this.head);
     return this;
   },
-  insert_sort_between : function(vtx, previous, next){
+  insert_sort_between : function(vtx, previous, vnext){
     var c = previous;
-    while(c != next && c.alpha < vtx.alpha)
+    while(c != vnext && c.alpha < vtx.alpha)
       c = c.next;
     this.insert_vertex_before(vtx, c);
     return this;
@@ -623,7 +623,7 @@ _polygon.class = _polygon.prototype = {
     vtx.next = before;
     vtx.prev = prv;
     if(before == this.head){
-      this.head = vtx;
+      this.tail = vtx;
     }
     this.count ++;
     return this;
@@ -819,7 +819,7 @@ _polygon.class = _polygon.prototype = {
                                                                                     [[cj.x, cj.y], [cnext.x, cnext.y]]);
 
                                         if(pt != null){
-                                          var ix = floatFix(pt[0]), iy = floatFix(pt[1]), ua = floatFix(pt[2]), ub = floatFix(pt[3]);
+                                          var ix = floatFix(pt[0]), iy = floatFix(pt[1]), ua = floatFix(pt[2], 3), ub = floatFix(pt[3], 3);
                                           if(ua == 0 || ua == 1 || ub == 0 || ub == 1){
                                             if(ua == 0){
                                               si.x = si.x + floatFix((1 - perturb) * (snext.x - si.x));
@@ -845,8 +845,8 @@ _polygon.class = _polygon.prototype = {
                                                          });
                                             is.neighbor = ic;
                                             ic.neighbor = is;
-                                            slist.insert_sort_between(is, si, si.next_non_intersecting());
-                                            clist.insert_sort_between(ic, cj, cj.next_non_intersecting());
+                                            slist.insert_sort_between(is, si, snext);
+                                            clist.insert_sort_between(ic, cj, cnext);
                                           }
 
                                         }
@@ -857,16 +857,16 @@ _polygon.class = _polygon.prototype = {
     var a, b; // default to clipping subject by clip
     switch(operation){
     case "|":
-      a = false;
-      b = false;
+      a = true;
+      b = true;
       break;
     case "-":
       a = false;
       b = true;
       break;
     default :
-      a = true;
-      b = true;
+      a = false;
+      b = false;
       break;
     }
     var polys = [slist, clist],
@@ -885,7 +885,7 @@ _polygon.class = _polygon.prototype = {
       polygon.foreach(function(node){
                         if(node.intersect){
                           node.entry_exit = status;
-                          status *= -1;
+                          status = (status == STATUS_ENTRY) ? STATUS_EXIT : STATUS_ENTRY;
                         }
                       });
     }
@@ -902,9 +902,21 @@ _polygon.class = _polygon.prototype = {
       }
       var new_poly = _polygon();
       do {
-        current.processed = true;
-        if(current.neighbor)
+        for(; !current.processed; current = current.neighbor)
+        for(var forward = current.entry_exit;;){
+          current.processed = true;
+          var n = current.copy();
+          new_poly.add_vtx(n);
+          current = (forward == STATUS_ENTRY) ? current.next : current.prev;
+          if(current.intersect){
+            current.processed = true;
+            break;
+          }
+        }
+/*        if(current.neighbor && !current.neighbor.processed){
           current.neighbor.processed = true;
+        }
+
         if(current.entry_exit == STATUS_ENTRY){
           do {
             current = current.next;
@@ -916,7 +928,7 @@ _polygon.class = _polygon.prototype = {
             new_poly.add_vtx(current.copy());
           } while(!current.intersect);
         }
-        current = current.neighbor;
+        current = current.neighbor; */
       } while(!current.processed);
 
       if(result != null){
@@ -1074,7 +1086,7 @@ _vector.pointOfIntersectionForLineSegments = function(seg_a, seg_b){
   if(_vector.numberInRange(ua, 0.0, 1.0) && _vector.numberInRange(ub, 0.0, 1.0)){
     return [
       start_a[0] + ua * (end_a[0] - start_a[0]),
-      start_a[1] + ub * (end_a[1] - start_a[1]),
+      start_a[1] + ua * (end_a[1] - start_a[1]),
       ua,
       ub
     ]; // return barycenric coordinates for alpha values in greiner-hormann
