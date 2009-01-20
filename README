@@ -1,0 +1,139 @@
+ Spatial Query - a JQuery like Javascript library for handling spatial maths
+
+ A set of functions for initializing array data into spatial objects
+ (matrix, vectors, polygons and latitude / longitude points) from which
+ further operations may be made.
+
+ Most vector and matrix operations support calculations to any dimension size.
+ In cases where they are not supported, one of the two following cases will arise:
+
+ * The function will be named <name>_2d or <name>_3d to indicate what dimension
+   the operated data should be in
+
+ * The function will throw an error stating that the general case solution has not
+   been implemented yet. (Matrix inversion, for example)
+
+ Examples:
+
+ Return a vector at point x:10, y:0, z: 40.
+
+ $v([10, 0, 40])
+
+
+ Return a 5 element vector:
+
+ $v([10, 0, 40, 21, 32])
+
+
+ Take the vector at x:10, y:20 and project it on the
+ vector at x:30 y:50, then return the magnitude of that
+ vector.
+
+ $v([10, 20]).project_on([30, 50]).magnitude();
+
+
+ Take the latitude / longitude pair for Indianapolis and convert
+ it into cartesian (WSG84) coordinates
+
+ $ll([39.7670, -86.1563]).vector()
+
+
+ The same as above, but roundtrip convert it back to latitude / longitude.
+
+ $ll([39.7670, -86.1563]).vector().latlng()
+
+
+ Generate a polygon
+
+ $p([[0,0], [0, 10], [10, 10], [10, 0]])
+
+
+ Compute the area of the polygon
+
+ $p([[0,0], [0, 10], [10, 10], [10, 0]]).area_2d()
+
+
+ Compute the centroid point (vector) of the polygon
+
+ $p([[0,0], [0, 10], [10, 10], [10, 0]]).centroid_2d()
+
+
+ Compute the convex hull of the polygon
+
+ $p([[0,0], [0, 10], [10, 10], [10, 0]]).convex_hull_2d()
+
+
+ Compute the union of the given polygon with another polygon
+
+ $p([[0,0], [0, 10], [10, 10], [10, 0]]).union_2d([[5,5], [5, 7], [15, 7], [15, 5]])
+
+
+
+ Vector:
+   -vector() -> Vector
+   -latlng() -> LatLng, Convert to Latitude and Longitude
+   -matrix() -> Matrix
+   -add(other_vector_or_scalar) -> Vector
+   -subtract(other_vector_or_scalar) -> Vector
+   -multiply(other_vector_or_scalar) -> Vector
+   -dot_product(other_vector) -> Number
+   -cross_product(other_vector) -> Vector if dimension greater than 2, Number if dimension == 2
+   -distance(other_vector) -> Number
+   -distance_2d_fast(other_vector) -> Number, A faster vector distance function.
+   -magnitude() -> Number
+   -norm(n) -> Number, The nth vectorm norm, defaults to 2.
+   -angle_between(other_vector) -> Vector
+   -project_onto(other_vector) -> Vector
+   -x(), y(), z() -> Number,    Convenience functions.
+   -elm(i) -> Number
+
+ Matrix:
+   -matrix() -> Matrix
+   -elm(i,j) -> Number
+   -add(matrix_or_scalar) -> Matrix
+   -subtract(matrix_or_scalar) -> Matrix
+   -multiply(matrix_or_scalar) -> Matrix
+   -divide(matrix) -> Matrix
+   -transpose() -> Matrix
+   -determinant() -> Number
+   -inverse() -> Matrix
+   -rotate() NOT IMPL
+   -identity() -> Matrix
+   -normalize() NOT IMPL
+
+ Polygon:
+   -matrix() -> Matrix
+   -polygon() -> Polygon
+   -add_point(vector) -> Polygon
+   -to_point_array() -> Array
+   -foreach(fn) -> Polygon, Calls fn with each node inside the polygon
+   -point_inside_2d(vector) -> Boolean
+   -point_inside_fast_2d(vector) -> Boolean
+   -clip_2d(polygon) -> Polygon
+   -union_2d(polygon) -> Polygon
+   -subtract_2d(polygon) -> Polygon
+   -area_2d() -> Number
+   -centroid_2d() -> Vector
+   -centroid_3d() -> Vector
+   -convex_hull_2d() -> Polygon
+
+ LatitudeLongitude:
+   -vector() -> Vector, convert to WSG84 x/y/z coords
+   -latlng() -> LatLng
+   -lat(), lng(), alt() -> Number, convenience functions
+   -distance_to(latlng)  -> Number, Uses the Vincenty eq. for mm precision
+   -bearing_between(latlng) -> Number
+   -destination_given_distance_and_bearing(distance, bearing)  -> Latlng
+
+
+ Known bugs:
+
+ * Math is not my strong suit
+ * Boolean operations on polygons are still not reliable.  There are some kinks in the algorithm.
+ * Some of the general case operations on a matrix are not yet implemented.  It's because they are hard,
+   and I don't personally need them right now.
+
+
+ Chris Z
+ For work at www.indy.com
+ Talked about at www.yeti-factory.org
