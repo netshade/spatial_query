@@ -70,7 +70,7 @@
 
 
 
- Vector:
+ Vector:  $v([x, y, z, t, etc])
    -vector() -> Vector
    -latlng() -> LatLng, Convert to Latitude and Longitude
    -matrix() -> Matrix
@@ -88,7 +88,7 @@
    -x(), y(), z() -> Number,    Convenience functions.
    -elm(i) -> Number
 
- Matrix:
+ Matrix: $m( [[row1a, row1b, row1c], [row2a, row2b, row2c]] )
    -matrix() -> Matrix
    -elm(i,j) -> Number
    -add(matrix_or_scalar) -> Matrix
@@ -102,7 +102,7 @@
    -identity() -> Matrix
    -normalize() NOT IMPL
 
- Polygon:
+ Polygon: $p( [ [x1, y1], [x2, y2], [x3, y3], [x4, y4] ] )
    -matrix() -> Matrix
    -polygon() -> Polygon
    -add_point(vector) -> Polygon
@@ -118,7 +118,7 @@
    -centroid_3d() -> Vector
    -convex_hull_2d() -> Polygon
 
- LatitudeLongitude:
+ LatitudeLongitude: $ll( [latitude, longitude, altitude] )
    -vector() -> Vector, convert to WSG84 x/y/z coords
    -latlng() -> LatLng
    -lat(), lng(), alt() -> Number, convenience functions
@@ -138,7 +138,7 @@
  Chris Z
  For work at www.indy.com
  Talked about at www.yeti-factory.org
- 
+
 */
 var _matrix = function(o){
   return new _matrix.class.assert(o);
