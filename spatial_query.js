@@ -642,6 +642,35 @@ _polygon.class = _polygon.prototype = {
     this.count ++;
     return this;
   },
+  remove_vertex : function(vtx){
+    var prv = vtx.prev, nxt = vtx.next;
+    if(prv == nxt && prv == vtx){
+      this.head = null;
+      this.tail = null;
+      this.count = 0;
+      return;
+    } else {
+      prv.next = nxt;
+      nxt.prev = prv;
+      if(vtx == this.head){
+        this.head = nxt;
+      }
+      if(vtx == this.tail){
+        this.tail = prv;
+      }
+      this.count --;
+    }
+  },
+  _clean : function(){
+    var c = this.head;
+    do {
+      var n = c.next;
+      if(c.intersect){
+        this.remove_vertex(c);
+      }
+      c = n;
+    } while(c != null && c != this.head);
+  },
   contains_2d : function(other){
     var p = _polygon(other);
     var inside = 0;
@@ -945,22 +974,6 @@ _polygon.class = _polygon.prototype = {
             break;
           }
         }
-/*        if(current.neighbor && !current.neighbor.processed){
-          current.neighbor.processed = true;
-        }
-
-        if(current.entry_exit == STATUS_ENTRY){
-          do {
-            current = current.next;
-            new_poly.add_vtx(current.copy());
-          } while(!current.intersect);
-        } else {
-          do {
-            current = current.prev;
-            new_poly.add_vtx(current.copy());
-          } while(!current.intersect);
-        }
-        current = current.neighbor; */
       } while(!current.processed);
 
       if(result != null){
@@ -968,6 +981,8 @@ _polygon.class = _polygon.prototype = {
       }
       result = new_poly;
     }
+    slist._clean();
+    clist._clean();
     return result;
   }
 },
