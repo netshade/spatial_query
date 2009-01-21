@@ -82,6 +82,7 @@
    -dot_product(other_vector) -> Number
    -cross_product(other_vector) -> Vector if dimension greater than 2, Number if dimension == 2
    -distance(other_vector) -> Number
+   -midpoint_2d(other_vector) -> Vector
    -distance_2d_fast(other_vector) -> Number, A faster vector distance function.
    -magnitude() -> Number
    -norm(n) -> Number, The nth vectorm norm, defaults to 2.
@@ -469,6 +470,14 @@ _vector.class = _vector.prototype = {
       throw new Error("Vector dimensions must be equal");
     return Math.sqrt(this.dot_product(v));
   },
+  midpoint_2d : function(other){
+    var v = _vector(other);
+    if(v.dims != this.dims)
+      throw new Error("Vector dimensions must be equal");
+    if(v.dims < 2)
+      throw new Error("Vector must be 2 dimensional");
+    return _vector([(v.x() + this.x()) / 2, (v.y() + this.y()) / 2]);
+  },
   distance_2d_fast : function(other){
     var v = _vector(other);
     if(v.dims != this.dims)
@@ -558,6 +567,16 @@ _polygon.class = _polygon.prototype = {
                        alpha: this.alpha,
                        entry_exit: this.entry_exit
                      });
+    };
+    this.filtered_prev = function(filter){
+      var cur = this.prev;
+      while(cur != this){
+        if(filter(cur)){
+          return cur;
+        }
+        cur = cur.prev;
+      }
+      return null;
     };
     this.filtered_next = function(filter){
       var cur = this.next;
