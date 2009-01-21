@@ -1,4 +1,6 @@
  Spatial Query - a JQuery like Javascript library for handling spatial maths
+ Copyright (c) 2009 Chris Zelenak
+ Spatial Query is freely distributable under the MIT X11 License - see LICENSE file.
 
  A set of functions for initializing array data into spatial objects
  (matrix, vectors, polygons and latitude / longitude points) from which
