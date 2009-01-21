@@ -1,5 +1,7 @@
 /*
  Spatial Query - a JQuery like Javascript library for handling spatial maths
+ Copyright (c) 2009 Chris Zelenak
+ Spatial Query is freely distributable under the MIT X11 License - see LICENSE file.
 
  A set of functions for initializing array data into spatial objects
  (matrix, vectors, polygons and latitude / longitude points) from which
@@ -110,9 +112,9 @@
    -foreach(fn) -> Polygon, Calls fn with each node inside the polygon
    -point_inside_2d(vector) -> Boolean
    -point_inside_fast_2d(vector) -> Boolean
-   -clip_2d(polygon) -> Polygon
-   -union_2d(polygon) -> Polygon
-   -subtract_2d(polygon) -> Polygon
+   -clip_2d(polygon) -> Polygon, or null if no operation took place
+   -union_2d(polygon) -> Polygon, or null if no operation took place
+   -subtract_2d(polygon) -> Polygon, or null if no operation took place
    -area_2d() -> Number
    -centroid_2d() -> Vector
    -centroid_3d() -> Vector
@@ -922,8 +924,8 @@ _polygon.class = _polygon.prototype = {
       b = true;
       break;
     case "-":
-      a = false;
-      b = true;
+      a = true;
+      b = false;
       break;
     default :
       a = false;
