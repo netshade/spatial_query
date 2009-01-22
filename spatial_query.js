@@ -127,9 +127,10 @@
    -vector() -> Vector, convert to WSG84 x/y/z coords
    -latlng() -> LatLng
    -lat(), lng(), alt() -> Number, convenience functions
-   -distance_to(latlng)  -> Number, Uses the Vincenty eq. for mm precision
+   -distance_to(latlng)  -> Number (meters), Uses the Vincenty eq. for mm precision
+   -distance_to_miles(latlng)  -> Number (miles)
    -bearing_between(latlng) -> Number
-   -destination_given_distance_and_bearing(distance, bearing)  -> Latlng
+   -destination_given_distance_and_bearing(distance_in_meters, bearing)  -> LatLng
 
 
  Known bugs:
@@ -1097,6 +1098,10 @@ _latlng.class = _latlng.prototype = {
 
     s = parseFloat(s.toFixed(3)); // round to 1mm precision
     return s;
+  },
+  distance_to_miles : function(other){
+    var met = this.distance_to(other);
+    return met / _latlng.METERS_PER_MILE;
   },
   bearing_between : function(other){
     var oll = _latlng(other);
