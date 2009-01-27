@@ -863,17 +863,17 @@ _polygon.class = _polygon.prototype = {
         c.y - a.y,
         c.z - a.z
       ];
-      var mag =vector(da).cross_product(db).magnitude();
+      var mag =_vector(da).cross_product(db).magnitude();
       denom += mag;
-      numer[0] += mag * ((a[0] + b[0] + c[0]) / 3);
-      numer[1] += mag * ((a[1] + b[1] + c[1]) / 3);
-      numer[2] += mag * ((a[2] + b[2] + c[2]) / 3);
+      numer[0] += mag * ((a.x + b.x + c.x) / 3);
+      numer[1] += mag * ((a.y + b.y + c.y) / 3);
+      numer[2] += mag * ((a.z + b.z + c.z) / 3);
       current = c.next;
     }
     numer[0] /= denom;
     numer[1] /= denom;
     numer[2] /= denom;
-    return vector(numer);
+    return _vector(numer);
   },
   // defaults to subtraction of subject from clip
   // other operations can be "|" union, "&" intersection, "-" set subtraction
