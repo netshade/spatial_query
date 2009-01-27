@@ -471,13 +471,18 @@ _vector.class = _vector.prototype = {
       throw new Error("Vector dimensions must be equal");
     return Math.sqrt(this.dot_product(v));
   },
+    midpoint : function(other){
+        var v = _vector(other);
+        var m = [];
+        if(v.dims != this.dims)
+            throw new Error("Vector dimensions must be equal");
+        for(var i = 0; i < v.dims; i++){
+            m.push( (this.elm(i) + v.elm(i)) / 2);
+        }
+        return _vector(m);
+    },
   midpoint_2d : function(other){
-    var v = _vector(other);
-    if(v.dims != this.dims)
-      throw new Error("Vector dimensions must be equal");
-    if(v.dims < 2)
-      throw new Error("Vector must be 2 dimensional");
-    return _vector([(v.x() + this.x()) / 2, (v.y() + this.y()) / 2]);
+      return this.midpoint(other);
   },
   distance_2d_fast : function(other){
     var v = _vector(other);
