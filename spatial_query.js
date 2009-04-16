@@ -764,57 +764,40 @@ _polygon.class = _polygon.prototype = {
                  });
     return c;
   },
-  convex_hull_2d : function(){
+  // thanks to Anton Venema (http://blog.frozenmountain.com/) for the pointer to the melkman algo
+  convex_hull_2d: function(){
+    if(this.count <= 3) return _polygon(this);
+    var deque = [];
     var points = this.to_point_array();
-    var pivot = null;
-    var stack = [];
-    for(var i = 0; i < points.length; i++){
-      if(pivot == null){
-        pivot = points[i];
-      } else if(points[i][1] <= pivot[1]) {
-        if(pivot[1] == points[i][1]){
-          if(points[i][0] < pivot[0]){
-            pivot = points[i];
-          }
-        } else {
-          pivot = points[i];
-        }
-      }
-    }
-    pivot = _vector(pivot);
-    var plen = pivot.magnitude();
-    points.sort(function(a, b){
-                  var angle_a = Math.acos(pivot.dot_product(a) / (_vector(a).magnitude() * plen));
-                  var angle_b = Math.acos(pivot.dot_product(b) / (_vector(b).magnitude() * plen));
-                  if(angle_a == angle_b){
-                    var dist_a = pivot.distance_2d_fast(a);
-                    var dist_b = pivot.distance_2d_fast(b);
-                    if(dist_a == dist_b){
-                      return 0;
-                    } else if(dist_a < dist_b){
-                      return -1;
-                    } else {
-                      return 1;
-                    }
-                  } else if(angle_a < angle_b) {
-                    return -1;
-                  } else {
-                    return 1;
-                  }
-                });
-    stack.push(points[0]);
-    var d = function(vec2a, vec2b, vec2c){
-      return (vec2b[0] - vec2a[0]) * (vec2c[1] - vec2a[1]) - (vec2c[0] - vec2a[0]) * (vec2b[1] - vec2a[1]);
+    // from http://softsurfer.com/Archive/algorithm_0101/algorithm_0101.htm#isLeft()
+    function isPointLeftOfLine(test, segment_a, segment_b){
+      var side = (segment_b[0] - segment_a[0]) * (test[1] - segment_a[1]) - (test[0] - segment_a[0]) * (segment_b[1] - segment_a[1]);
+      return side;
     };
-    for(var i = 1; i < points.length; i++){
-      while(  (stack.length >= 2) ?
-        d(stack[stack.length - 2], stack[stack.length - 1], points[i]) <= 0 :
-              stack[stack.length - 1] == points[i]){
-        stack.pop();
-      }
-      stack.push(points[i]);
+    deque.push(points[2]);
+    if(isPointLeftOfLine(points[2], points[0], points[1]) > 0){
+      deque.push(points[0]); dequeu.push(points[1]);
+    } else {
+      deque.push(points[1]); dequeu.push(points[0]);
     }
-    return _polygon(stack);
+    deque.push(points[2]);
+    for(var i = 3; i < points.length; i++){
+      var last = deque.length - 1;
+      if(isPointLeftOfLine(points[i], deque[0], deque[1]) > 0 &&
+         isPointLeftOfLine(points[i], deque[last-1], deque[last]) > 0){
+        continue;
+      }
+      while(isPointLeftOfLine(points[i], deque[0], deque[1]) < 0){
+        deque.splice(0, 1);
+      }
+      deque.splice(0, 0, points[i]);
+      last = deque.length - 1;
+      while(isPointLeftOfLine(points[i], deque[last - 1], deque[last]) < 0){
+        deque.pop();
+      }
+      deque.push(points[i]);
+    }
+    return _polygon(deque);
   },
   clip_2d : function(other){
     return this._boolean_2d(other);
