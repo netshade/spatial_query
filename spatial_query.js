@@ -787,13 +787,16 @@ _polygon.class = _polygon.prototype = {
          isPointLeftOfLine(points[i], deque[last-1], deque[last]) > 0){
         continue;
       }
+
       while(isPointLeftOfLine(points[i], deque[0], deque[1]) < 0){
         deque.splice(0, 1);
       }
       deque.splice(0, 0, points[i]);
+
       last = deque.length - 1;
       while(isPointLeftOfLine(points[i], deque[last - 1], deque[last]) < 0){
         deque.pop();
+        last--;
       }
       deque.push(points[i]);
     }
