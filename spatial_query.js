@@ -356,12 +356,13 @@ _vector.class = _vector.prototype = {
     } else if(obj.length){
       this.data = obj;
       this.dims = obj.length;
-    }
+    }       
     return this;
   },
   vector : function(){
     return this;
   },
+
   matrix : function(){
     return _matrix([this.data]);
   },
@@ -386,6 +387,40 @@ _vector.class = _vector.prototype = {
   z : function(){
     return this.data[2];
   },
+  toString : function (){
+    var s = "[Vector:(";
+    s += this.data.join (",");
+    s += ")]";
+    return s;
+  },
+  compareTo : function (other){
+    var o = _vector (other);
+    if (this.dims != o.dims){
+      throw new Error ("Vector dimensions must be equal");
+    }
+    var origin = _vector.origin (this.dims);
+    var this_distance = this.distance (origin);
+    var o_distance = o.distance (origin);
+    if (this_distance < o_distance){
+      return -1;
+    } else if (this_distance > o_distance) {
+      return 1;
+    } else {
+      return 0;
+    }
+  },
+  equals : function (other){
+    var o = _vector (other);
+    if (this.dims != o.dims){
+      return false;
+    }
+    for (var i = 0; i < this.dims; i++){
+      if (this.elm (i) != o.elm (i)){
+        return false;
+      }
+    }
+    return true;
+  },
   add : function(other){
     var scalar = false, ov = null;
     if(typeof(other) == "number"){
@@ -404,7 +439,7 @@ _vector.class = _vector.prototype = {
       }
       return _vector(res);
     } else {
-      throw new Error("Vector dimensions must be equal");
+        throw new Error("Vector dimensions must be equal");
     }
   },
   subtract : function(other){
@@ -469,7 +504,13 @@ _vector.class = _vector.prototype = {
     var v = _vector(other);
     if(v.dims != this.dims)
       throw new Error("Vector dimensions must be equal");
-    return Math.sqrt(this.dot_product(v));
+    var sum = 0;
+    var d = 0;
+    for (var i =0; i < v.dims; i++) {
+      d = v.elm(i) - this.elm (i);
+      sum += Math.pow (d, 2);
+    }
+    return Math.sqrt(sum);
   },
     midpoint : function(other){
         var v = _vector(other);
@@ -1156,6 +1197,19 @@ _vector.pointOfIntersectionForLineSegments = function(seg_a, seg_b){
     ]; // return barycenric coordinates for alpha values in greiner-hormann
   }
   return null; // does not intersect
+};
+
+// acquire a vector origin with dims dimensions
+_vector.origin = function (dims){
+  if (typeof (dims) == 'undefined' || dims == null){
+    return _vector ([0, 0]);
+  } else {
+    var a = [];
+    for (var i = 0; i < dims; i++){
+      a.push (0);
+    }
+    return _vector (a);
+  }
 };
 
 _latlng.numberToBearing = function(n){
